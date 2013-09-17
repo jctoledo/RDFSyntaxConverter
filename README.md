@@ -4,6 +4,6 @@ Convert your linked data files from/to a variety of formats: RDF/XML, N-Triple, 
 #Getting Started
 You will need to have maven2 installed. 
 Run: 
-$mvn clean install
+$mvn clean assembly:assembly
 
 Inside of the target directory you will find a jar file:
