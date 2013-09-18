@@ -40,10 +40,26 @@ public class RDFSyntaxConverterTest {
 	private static RDFSyntaxConverter rsc2;
 	@BeforeClass
 	public static void setup(){
-		inputFile = new File("/home/jose/tmp/input.rdf");
-		outputFile = new File("/tmp/output.rdf");
-		rsc = new RDFSyntaxConverter(inputFile, outputFile);
-		rsc2 = new RDFSyntaxConverter(inputFile, outputFile, "N-TRIPLE");
+		inputFile = new File("/home/alison/tmp/");
+		outputFile = new File("/tmp/");
+		try {
+			rsc = new RDFSyntaxConverter(inputFile, outputFile);
+		} catch (NullPointerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			rsc2 = new RDFSyntaxConverter(inputFile, outputFile, "N-TRIPLE");
+		} catch (NullPointerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@AfterClass
