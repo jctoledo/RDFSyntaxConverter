@@ -25,6 +25,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.zip.Checksum;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.query.Dataset;
@@ -38,8 +40,6 @@ import com.hp.hpl.jena.util.FileManager;
  */
 public class RDFSyntaxConverter {
 	static final Logger log = Logger.getLogger(RDFSyntaxConverter.class);
-	private static String outputSyntax;
-	private String directory = "/tmp/jena";
 	/**
 	 * The file that is to be converted
 	 */
@@ -66,19 +66,34 @@ public class RDFSyntaxConverter {
 	 *            the rdf file to be converted
 	 * @param outputFile
 	 *            the default output RDF file RDF/XML syntax
+	 * @throws Exception
 	 */
-	public RDFSyntaxConverter(File anInputFile, File anOutputFile) {
+	public RDFSyntaxConverter(File anInputFile, File anOutputFile)
+			throws Exception {
 		inputFile = anInputFile;
 		outputFile = anOutputFile;
 		try {
-			// Try reading the input file
-			d = TDBFactory.createDataset("/tmp/jena/tdb");
-			m = d.getDefaultModel();
-			FileManager.get().readModel(m, inputFile.getAbsolutePath());
-			// m = FileManager.get().loadModel(inputFile.getAbsolutePath());
-			// write it to file using rdf/xml syntax
-
-			m.write(new FileOutputStream(anOutputFile));
+			// Try reading the input file/directory
+			if (inputFile.isDirectory() && outputFile.isDirectory()) {
+				File[] files = inputFile.listFiles();
+				for (int i = 0; i < files.length; i++) {
+					File f = files[i];
+					System.out.println("Converting "+f.getAbsolutePath()+"... ");
+					FileUtils.cleanDirectory(new File("/tmp/jena"));
+					d = TDBFactory.createDataset("/tmp/jena/tdb");
+					m = d.getDefaultModel();
+					FileManager.get().readModel(m, f.getAbsolutePath());
+					// write it to file using rdf/xml syntax
+					String outname = FilenameUtils.getBaseName(f.getName());
+					File outFile = new File(outputFile.getAbsolutePath()+"/"
+							+ outname + ".rdf");
+					m.write(new FileOutputStream(outFile));
+				}
+				System.out.println("...done!");
+			} else {
+				throw new Exception(
+						"Input and output directories must be specified!");
+			}
 		} catch (FileNotFoundException e) {
 			log.error("could not write to file", e);
 		} finally {
@@ -92,20 +107,53 @@ public class RDFSyntaxConverter {
 	}
 
 	public RDFSyntaxConverter(File anInputFile, File anOutputFile,
-			String outputSyntax) {
+			String outputSyntax) throws Exception {
 		inputFile = anInputFile;
 		outputFile = anOutputFile;
-		// check for valid output syntax
-		if (checkOutputSyntax(outputSyntax)) {
-			m = FileManager.get().loadModel(inputFile.getAbsolutePath());
 
-			try {
-				m.write(new FileOutputStream(anOutputFile), outputSyntax);
-			} catch (FileNotFoundException e) {
-				log.error("could not write to file!", e);
+		if (inputFile.isDirectory() && outputFile.isDirectory()) {
+			if (checkOutputSyntax(outputSyntax)) {
+				File[] files = inputFile.listFiles();
+				for (int i = 0; i < files.length; i++) {
+					File f = files[i];
+					System.out.println("Converting "+f.getAbsolutePath()+" ...");
+					FileUtils.cleanDirectory(new File("/tmp/jena"));
+					d = TDBFactory.createDataset("/tmp/jena/tdb");
+					m = d.getDefaultModel();
+					FileManager.get().readModel(m, f.getAbsolutePath());
+					// write it to file using rdf/xml syntax
+					String outname = FilenameUtils.getBaseName(f.getName());
+					String suffix = null;
+					if (outputSyntax.equals("RDF/XML")
+							| outputSyntax.equals("RDF/XML-ABBREV")) {
+						suffix = ".rdf";
+					} else if (outputSyntax.equals("N-TRIPLE")) {
+						suffix = ".nt";
+					} else {
+						suffix = "." + outputSyntax.toLowerCase();
+					}
+					File outFile = new File(outputFile.getAbsolutePath()+"/"
+							+ outname + suffix);
+					try {
+						m.write(new FileOutputStream(outFile),
+								outputSyntax);
+					} catch (FileNotFoundException e) {
+						log.error("could not write to file!", e);
+					} finally {
+						try {
+							m.close();
+							d.close();
+						} catch (Exception e) {
+							log.error(e);
+						}
+					}
+				}
+			} else {
+				System.out.println("Invalid syntax given! => " + outputSyntax);
 			}
 		} else {
-			System.out.println("Invalid syntax given! => " + outputSyntax);
+			throw new Exception(
+					"Input and output directories must be specified!");
 		}
 	}
 

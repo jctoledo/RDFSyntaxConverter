@@ -40,8 +40,8 @@ public class ConvertRDF {
 	public static void main(String[] args){
 		Options options = createOptions();
 		CommandLineParser parser = createCliParser();
-		File iF =null;
-		File oF= null;
+		File iD = null;
+		File oD = null;
 		String syntax = null;
 		try{
 			CommandLine cmd = parser.parse(options, args);
@@ -50,17 +50,17 @@ public class ConvertRDF {
 				System.exit(1);
 			}
 			
-			if(cmd.hasOption("inputFile")){
-				iF = new File(cmd.getOptionValue("inputFile"));
+			if(cmd.hasOption("inputDir")){
+				iD = new File(cmd.getOptionValue("inputDir"));
 			}else{
-				System.out.println("You must specify an input file name");
+				System.out.println("You must specify an input directory");
 				System.exit(1);
 			}
 			
-			if(cmd.hasOption("outputFile")){
-				oF = new File(cmd.getOptionValue("outputFile"));
+			if(cmd.hasOption("outputDir")){
+				oD = new File(cmd.getOptionValue("outputDir"));
 			}else{
-				System.out.println("You must specify an ouput file name");
+				System.out.println("You must specify an output directory");
 				System.exit(1);
 			}
 			
@@ -69,9 +69,17 @@ public class ConvertRDF {
 			}
 			
 			if(syntax != null){
-				RDFSyntaxConverter rsc = new RDFSyntaxConverter(iF, oF, syntax);
+				try {
+					RDFSyntaxConverter rsc = new RDFSyntaxConverter(iD, oD, syntax);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}else{
-				RDFSyntaxConverter rsc = new RDFSyntaxConverter(iF, oF);
+				try {
+					RDFSyntaxConverter rsc = new RDFSyntaxConverter(iD, oD);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			
 		}catch (ParseException e){
@@ -86,24 +94,24 @@ public class ConvertRDF {
 		Options o = new Options();
 		//help option
 		Option help = new Option("help", false, "Print this message");
-		Option inputFile = OptionBuilder.withArgName("inputFile")
+		Option inputDirectory = OptionBuilder.withArgName("inputDir")
 				.hasArg(true)
-				.withDescription("Full path to RDF file to be converted")
+				.withDescription("Full path to directory of RDF files to be converted")
 				.isRequired()
-				.create("inputFile");
-		Option outputFile = OptionBuilder.withArgName("output")
+				.create("inputDir");
+		Option outputDirectory = OptionBuilder.withArgName("outputDir")
 				.hasArg(true)
-				.withDescription("Full path to Output RDF File")
+				.withDescription("Full path to output directory for converted RDF files")
 				.isRequired()
-				.create("outputFile");
+				.create("outputDir");
 		Option syntax =OptionBuilder.withArgName("syntax")
 		.hasArg(true)
 		.withDescription("The output syntax (RDF/XML|RDF/XML-ABBREV|N-TRIPLE|TURTLE|TTL|N3")
 		.create("syntax");
 		
 		o.addOption(help);
-		o.addOption(inputFile);
-		o.addOption(outputFile);
+		o.addOption(inputDirectory);
+		o.addOption(outputDirectory);
 		o.addOption(syntax);
 		return o;
 	}
