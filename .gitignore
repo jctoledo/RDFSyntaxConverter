@@ -1,6 +1,7 @@
 *.class
 *target*
 *.log
+*.classpath
 # Package Files #
 *.jar
 *.war

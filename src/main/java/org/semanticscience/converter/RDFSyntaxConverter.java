@@ -117,7 +117,9 @@ public class RDFSyntaxConverter {
 				for (int i = 0; i < files.length; i++) {
 					File f = files[i];
 					System.out.println("Converting "+f.getAbsolutePath()+" ...");
-					FileUtils.cleanDirectory(new File("/tmp/jena"));
+					FileUtils.deleteDirectory(new File("/tmp/jena"));
+					FileUtils.forceMkdir(new File("/tmp/jena"));
+					FileUtils.forceMkdir(new File("/tmp/jena/tdb"));
 					d = TDBFactory.createDataset("/tmp/jena/tdb");
 					m = d.getDefaultModel();
 					FileManager.get().readModel(m, f.getAbsolutePath());
@@ -140,13 +142,14 @@ public class RDFSyntaxConverter {
 					} catch (FileNotFoundException e) {
 						log.error("could not write to file!", e);
 					} finally {
-						try {
-							m.close();
-							d.close();
-						} catch (Exception e) {
-							log.error(e);
-						}
+						
 					}
+				}
+				try {
+					m.close();
+					d.close();
+				} catch (Exception e) {
+					log.error(e);
 				}
 			} else {
 				System.out.println("Invalid syntax given! => " + outputSyntax);
