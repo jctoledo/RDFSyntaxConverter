@@ -1,4 +1,4 @@
-#Welcome to RDFSyntaxConverter v0.1
+#Welcome to RDFSyntaxConverter v1.1
 Convert your linked data files from/to a variety of formats: RDF/XML, N-Triple, Turtle
 
 #Getting Started
