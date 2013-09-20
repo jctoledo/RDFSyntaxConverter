@@ -42,7 +42,7 @@ public class RDFSyntaxConverterTest {
 	public static void setup(){
 		inputFile = new File("/tmp/input");
 		outputFile = new File("/tmp/output");
-		try {
+		/*try {
 			rsc = new RDFSyntaxConverter(inputFile, outputFile);
 		} catch (NullPointerException e) {
 			// TODO Auto-generated catch block
@@ -50,8 +50,8 @@ public class RDFSyntaxConverterTest {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		/*try {
+		}*/
+		try {
 			rsc2 = new RDFSyntaxConverter(inputFile, outputFile, "N-TRIPLE");
 		} catch (NullPointerException e) {
 			// TODO Auto-generated catch block
@@ -59,7 +59,7 @@ public class RDFSyntaxConverterTest {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 	}
 	
 	@AfterClass
